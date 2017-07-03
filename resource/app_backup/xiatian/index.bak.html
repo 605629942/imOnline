@@ -1,0 +1,87 @@
+<!DOCTYPE html>  
+<html>  
+  
+<head>  
+    <meta charset="utf-8">  
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">  
+    <title>聊天</title>  
+    <link rel="stylesheet" href="">  
+    <script language="JavaScript" src="http://code.jquery.com/jquery-1.11.0.js"></script>  
+    <script type="text/javascript">  
+    </script>  
+</head>  
+<style type="text/css" media="screen">  
+div {  
+    border: 1px solid #cccccc;  
+    width: 500px;  
+    min-height: 100px;  
+}  
+</style>  
+  
+<body>  
+    <div id="show">  
+    </div>  
+    <input type="text" id="message" name="" value="" placeholder=""> 
+	<!--
+    <input type="text" id="name" value="" placeholder="昵称;"> 
+	-->
+    <a href="javascript:void(0)" onclick="send()">发送</a>  
+    <a href="javascript:void(0)" onclick="exit()">退出</a>  
+    <!-- <input type="text" id="token" name="" value="" placeholder="" readonly="false"> -->  
+	参考 
+</body>
+<script type="text/javascript" src="untils/untils.js">
+</script>  
+<script type="text/javascript">
+var untils = new untils();
+var username = prompt('请输入用户名');
+if(username == ''){
+	//不输入设置默认名字
+	username = untils.getName(5);
+}
+var test = untils.getUrlParam('test');
+//console.log(test);
+var wsServer = "ws://123.59.46.129:8217";//默认到服务器环境
+if(test == 'test'){
+	wsServer = "ws://127.0.0.1:8217";//url上有test即访问本地socket服务,访问方式?test=test
+}
+wsServer +="?&name="+username; 
+var ws = new WebSocket(wsServer); 
+ws.onopen = function() {  
+    console.log("连接状态", ws);  
+    $("#show").html("连接状态;" + ws.readyState + "</br>");
+	//var data = "{name:'"+username+"'}";
+    //ws.send(data);//把用户名传给服务器  
+};  
+ws.onmessage = function(evt) {  
+    //接收服务端传回来的消息并且显示
+    $("#show").append(evt.data + "</br>");  
+};  
+ws.onclose = function(evt) {  
+    console.log("WebSocketClosed!");  
+    console.log(evt);  
+};  
+ws.onerror = function(evt) {  
+    console.log("WebSocketError!");  
+};  
+  
+function send() {  
+    var msg = $("#message").val();  
+    var key = $("#token").val();  
+    var name = username;  
+    var str = "{name:'" + name + "',msg:'" + msg + "',key:'" + key + "'}";  
+    console.log("发送", str);  
+    ws.send(str);  
+};  
+  
+function exit() {  
+    var r = ws.close();  
+    console.log("退出", r);  
+}  
+</script>  
+  
+</html>  
+
+
+
+
