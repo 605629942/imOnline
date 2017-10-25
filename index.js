@@ -1,76 +1,93 @@
 /*服务器端程序*/
-/*参考https://github.com/socketio/socket.io/blob/master/examples/chat/index.js*/
+
 //创建HTTP服务器
-var express = require('express');   //引入express模块
-var app = express();	//新建express实例，即一个新的HTTP服务器
-var server = app.listen(3000); //服务器监听3000端口
-var io = require('socket.io').listen(server); //使用socket.io服务端库绑定服务器
-
-//express.static()是express框架内置中间件(middleware)，用于静态文件服务，其参数为静态文件所在目录
-//这行命令相当于建立URL与文件目录的route，静态文件目录无需出现在url中
-// __dirname是nodejs全局变量，引用当前目录地址，"app"为静态文件(html/css/js等)所在目录
-app.use(express.static(__dirname + '/app')); 
-
+var express = require('express');
+var app = express();
+var server = app.listen(3000);
+var io = require('socket.io').listen(server);
+console.log('the server is running');
+app.use(express.static(__dirname + '/app'));
 
 //Chatroom
-
-var numUsers = 0; //用户数,每次用户数发生变化时传递给前端
+var numUsers = 0;
+var unames = {};
+var usockets = {};
 
 io.on("connection", function(socket) {
     var addedUser = false;
+    var socketId = '';
 
-    //监听客户端发出的'new message'事件
-    socket.on('new message', function(data) {
-        //告诉其它客户端执行'new message'事件
-        socket.broadcast.emit('new message', {
-            username: socket.username,
-            message: data,
-        });
-    });
-
-    //监听客户端发出的'add user'事件
-    socket.on('add user', function(username) {
-        if (addedUser) return; //如果用户已添加，则退出函数
-
-        //为该客户端本次socket会话储存用户名
-        socket.username = username;
-        ++numUsers; //用户数加1
+    //sysInfo data数据结构(根据时间不同，可以选择不同属性值)
+    //msg: 需要显示的系统提示内容
+    //numUsers: 当前聊天室的用户数 
+    //username: 系统消息关联的用户名
+    socket.on('check username', function(data) {
+        console.log(data.userId);
+        var userId = data.userId;
+        var username = data.clientName;
+        if (addedUser) return;
+        if (username in unames) {
+            socket.emit('username exists', {
+                msg: '昵称已存在,请更换昵称'
+            });
+            return;
+        }
+        socketId = username;
+        unames[username] = username;
+        usockets[userId] = socket;
+        ++numUsers;
         addedUser = true;
-        //发送客户端'login'事件和数据
-        socket.emit('login', {
-            numUsers: numUsers
-        });
 
-        //向其它用户广播：有人已经连接
-        socket.broadcast.emit('user joined', {
-            username: socket.username,
+        socket.emit('login success', '欢迎来到imOline聊天室');
+
+        socket.broadcast.emit('user joined', socketId);
+
+        io.sockets.emit('add userList',{
             numUsers: numUsers,
+            unames: unames    
         });
     });
 
-    //当该用户发出'typing'事件时(正在输入),广播给其它用户
-    socket.on('typing', function() {
-        socket.broadcast.emit('typing', {
-            username: socket.username
-        });
-    });
-
-    //当该用户停止输入时，广播给其它用户
-    socket.on('stop typing', function() {
-        socket.broadcast.emit('stop typing', {
-            username: socket.username
-        });
-    });
-
-    //当用户离开时
-    socket.on('disconnect', function () {
-        if (addedUser) {    //如果用户存在
+    socket.on('disconnect', function() {
+        if (addedUser) {
             --numUsers;
-
-            //向其它用户广播
-            socket.broadcast.emit('user left', {
-                username: socket.username,
+            addedUser = false;
+            delete unames[socketId];
+            delete usockets[socketId];
+            socket.broadcast.emit('user left', socketId);
+            socket.broadcast.emit('remove userList', {
                 numUsers: numUsers,
+                username: socketId    
+            });
+        }
+    });
+
+    socket.on('typing', function() {
+        socket.broadcast.emit('typing', socketId);
+    });
+
+    socket.on('stop typing', function() {
+        socket.broadcast.emit('stop typing', socketId);
+    });
+
+    //聊天内容数据结构
+    //method: 消息类型，public/private/system
+    //from: 消息来源
+    //to: 消息目的
+    //msg: 消息内容
+    socket.on('new message', function(data) {
+        //console.log('the to is :'.data.to);
+        if (!data.to) {
+            io.sockets.emit('new message', data);
+        } else if (data.to) {
+            usockets[data.to].emit('new message', data);
+            //usockets[data.from].emit('new message', data);
+        } else {
+            usockets[data.from].emit('new message', {
+                mode: 'system',
+                from: '系统',
+                to: data.from,
+                msg: '私聊对象已离开!'
             });
         }
     });

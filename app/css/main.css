@@ -1,0 +1,187 @@
+/* Fix user-agent */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+}
+
+html,
+input {
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+ul {
+    list-style: none;
+    word-wrap: break-word;
+}
+
+div,
+h3,
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+
+/*pages*/
+
+.pages {
+    width: 100%;
+    height: 100%;
+    border: 1px solid yellow;   
+    display: table-cell;
+    
+}
+
+.page {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+
+/*login page*/
+div.login.page {
+    position: absolute;    
+    font-size: 150%;
+    text-align: center;    
+}
+.login.page .form {
+    position: absolute;   
+    height: 100px;
+    width: 300px;
+    top: 50%;
+    left: 50%;
+    margin-top: -50px;
+    margin-left: -150px;      
+}
+
+.login.page .title {
+    height: 35px;   
+    vertical-align: middle;   
+}
+.login.page .usernameInput {   
+    width: 80%;
+    height: 30px; 
+    margin-top: 20px; 
+}
+
+.login.page p.prompt {
+    text-align: center;
+    width: 100%;
+    font-size:1.2rem; 
+}
+
+
+/*chat page*/
+.chat.page {
+	display: none;
+}
+
+.chat.page .m-left {
+    float: left;  
+    width: 70%;
+    height: 100%;  
+    position: absolute;
+}
+
+.chat.page .m-right {
+   float: right;
+    width: 30%;
+    height: 100%;    
+}
+
+/*.m-left*/
+.m-left div {    
+    width: 100%; 
+}
+
+/*.m-left .sysInfoArea*/
+.m-left .sysInfoArea {
+    position: absolute;
+    height: 100px;    
+    border: 1px solid black;
+    border-radius: 5px;
+    overflow-y: auto;
+    padding: 5px;  
+}
+
+/*.m-left .chatArea*/
+.m-left .chatArea {
+    position: absolute;
+    top:110px;
+    bottom: 50px;    
+    border: 1px solid black;
+    border-radius: 5px;
+    overflow-y: auto; 
+    padding: 5px;   
+}
+
+.chatArea .selfMessage {
+    text-align: right;
+}
+
+.chatArea li {
+    font-size: 1.2rem;
+}
+/*.m-left .inputArea*/
+.m-left .inputArea{
+    position: absolute;
+    height: 40px;
+    bottom: 5px;   
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+}
+
+.m-left .inputArea .inputMessage {
+    flex: auto;
+    padding-left: 5px;
+    height: 100%; 
+    font-size: 100%;
+}
+
+.m-left .inputArea .clearBtn {
+    width: 60px;
+    margin-left: 5px;  
+    font-size: 1rem;
+    border-radius: 5px;
+}
+
+/*.m-right*/
+.m-right div {   
+    height: 90%;
+    border: 1px solid black;
+    border-radius: 5px;
+    overflow-y: auto;
+    padding: 5px;
+}
+
+.m-right h3 {
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+}
+
+.m-right .userList {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/*时间戳信息*/
+
+li.timeStamp {
+    text-align: center;
+}
