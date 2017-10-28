@@ -1,8 +1,8 @@
-var log4js = require("log4js");  
-var log4js_config = require("./log4js.json");  //加载配置文件
-log4js.configure(log4js_config); 
-var LogFile = log4js.getLogger('log_date');
-LogFile.info('---the server is running---');
+//var log4js = require("log4js");  
+//var log4js_config = require("./log4js.json");  //加载配置文件
+//log4js.configure(log4js_config); 
+//var LogFile = log4js.getLogger('log_date');
+//LogFile.info('---the server is running---');
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({
 }));
 var server = app.listen(8217);//监听3000端口
 var io = require('socket.io').listen(server);
-console.log('the server is running;the port is 3000');
+console.log('the server is running;the port is 8217');
 //LogFile.info('the server is running');  
 var usockets = {};//保存客户端socket对象
 io.on('connection',function(socket){
